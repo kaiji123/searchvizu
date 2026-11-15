@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SearchVizu: research visualisation studio
 
-## Getting Started
+Portfolio site, hosted visualisation pages, embeds and an intake form for a
+bespoke scientific-visualisation service.
 
-First, run the development server:
+Built with Next.js 16 (App Router, Cache Components), React 19, Tailwind 4 and
+React Three Fiber.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev     # http://localhost:3000
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Routes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Route | What it is |
+| --- | --- |
+| `/` | Landing page: examples, domains, process, pricing |
+| `/work` | Portfolio of **public** visualisations |
+| `/viz/[slug]` | Full hosted page: visual, explanation, limitations, references, attribution, share/embed |
+| `/embed/[slug]/v[n]` | Chrome-less, versioned page for `<iframe>` embedding (the only route other sites may frame) |
+| `/request` | Intake form (`?package=figure\|interactive-2d\|interactive-3d` preselects a package) |
+| `/sitemap.xml`, `/robots.txt` | Public pages only; embeds are disallowed |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Adding a visualisation (e.g. a client project)
 
-## Learn More
+1. Build the component in `src/components/viz/` as a default-exported client component.
+2. Register it in `src/components/viz/registry.tsx` (it is code-split and browser-only).
+3. Add an entry to `src/content/visualisations.ts` with text, limitations, references and **visibility**:
+   - `public`: in the portfolio and sitemap
+   - `unlisted`: direct link only, `noindex` (client review, private work)
+   - `draft`: not served
 
-To learn more about Next.js, take a look at the following resources:
+   Bump `version` when a change could break an existing embed.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Intake submissions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`src/lib/intake.ts` stores requests:
 
-## Deploy on Vercel
+- If `INTAKE_WEBHOOK_URL` is set, each request is POSTed there as JSON (Zapier, Make, n8n, Slack or your own API). **Use this on Vercel**, where the disk is read-only.
+- Otherwise they're appended to `.data/requests.jsonl` (gitignored).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Absolute base URL for metadata, sitemap and embed snippets (defaults to `http://localhost:3000`) |
+| `INTAKE_WEBHOOK_URL` | Where intake form submissions are sent |
+
+## Next steps (deliberately not built yet)
+
+- Real access control for confidential client pages (auth + `"use cache: private"` or a gated route), beyond unlisted links.
+- A database and admin view for requests and projects, once there's demand.
+- Self-service upload/generation, only if pilots show researchers want it.
