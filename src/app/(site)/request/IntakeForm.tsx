@@ -3,19 +3,20 @@
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ROLE_OPTIONS, USE_OPTIONS } from "@/lib/intake-options";
-import { packages } from "@/lib/site";
 import { submitIntake } from "./actions";
 import type { FieldName, IntakeState } from "./types";
 
 const PACKAGE_CHOICES = [
-  ...packages.map((p) => ({ value: p.id, label: p.name, note: `${p.price} ${p.priceNote}` })),
-  { value: "unsure", label: "Not sure yet", note: "We'll suggest one" },
+  { value: "figure", label: "2D figure", note: "A clear static visual" },
+  { value: "interactive-2d", label: "Interactive 2D", note: "A visual to explore" },
+  { value: "interactive-3d", label: "Interactive 3D", note: "A spatial experience" },
+  { value: "unsure", label: "Not sure yet", note: "We'll help you decide" },
 ];
 
 const SHARING_CHOICES = [
   { value: "public-after-approval", label: "Can be shown publicly", note: "Only after you approve the final version" },
-  { value: "private", label: "Private", note: "Unlisted link only, never in the portfolio" },
-  { value: "embargoed", label: "Embargoed", note: "Private until a date you set, e.g. publication" },
+  { value: "private", label: "Not for the portfolio", note: "An unlisted link is not access-controlled" },
+  { value: "embargoed", label: "Embargoed", note: "Do not publish before the date you set" },
 ];
 
 export function IntakeForm() {
@@ -33,8 +34,7 @@ export function IntakeForm() {
       <div className="rounded-xl border border-line bg-surface p-8" role="status">
         <h2 className="text-xl font-semibold">Thanks{state.name ? `, ${state.name.split(" ")[0]}` : ""}. Your request is in.</h2>
         <p className="mt-2 text-muted">
-          We&apos;ll read your materials and reply within two working days with questions or a fixed quote. Nothing is published without your
-          approval.
+          We&apos;ll read your request and get back to you. Nothing is published without your approval.
         </p>
       </div>
     );
@@ -147,7 +147,7 @@ export function IntakeForm() {
       </Group>
 
       <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted">No payment now. We&apos;ll reply with a fixed quote before any work starts.</p>
+        <p className="text-sm text-muted">Share what you have in mind and we&apos;ll take it from there.</p>
         <button type="submit" className="btn-primary" disabled={pending}>
           {pending ? "Sending…" : "Send request"}
         </button>

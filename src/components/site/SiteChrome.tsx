@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { NotificationBell } from "./NotificationBell";
 
 export function Container({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-6xl px-4 sm:px-6 ${className}`}>{children}</div>;
@@ -11,17 +12,21 @@ export function Header() {
       <Container className="flex h-14 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <Logo />
-          {site.name}
+          <span className="hidden min-[420px]:inline">{site.name}</span>
         </Link>
         <nav className="flex items-center gap-1 text-sm sm:gap-4">
           <Link href="/work" className="rounded px-2 py-1 text-muted hover:text-ink">
             Work
           </Link>
-          <Link href="/#pricing" className="hidden rounded px-2 py-1 text-muted hover:text-ink sm:inline">
-            Pricing
+          <Link href="/portal" className="rounded px-2 py-1 text-muted hover:text-ink">
+            Portal
           </Link>
+          <Link href="/#pricing" className="hidden rounded px-2 py-1 text-muted hover:text-ink sm:inline">
+            Subscriptions
+          </Link>
+          <NotificationBell />
           <Link href="/request" className="btn-primary !px-3 !py-1.5">
-            Request a visual
+            <span className="hidden sm:inline">Request a visual</span><span className="sm:hidden">Request</span>
           </Link>
         </nav>
       </Container>

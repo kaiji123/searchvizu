@@ -18,7 +18,7 @@ export function ShareEmbed({ pageUrl, embedUrl, title }: { pageUrl: string; embe
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex min-w-0 flex-col gap-3">
       <div className="flex flex-wrap gap-2">
         <button type="button" className="btn-secondary" onClick={() => copy("link", pageUrl)}>
           {copied === "link" ? "Link copied" : "Copy link"}

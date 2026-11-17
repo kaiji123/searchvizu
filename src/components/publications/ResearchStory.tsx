@@ -1,0 +1,8 @@
+import { PrivateVisual } from "@/components/viz/private/registry";
+import type { Doc } from "../../../convex/_generated/dataModel";
+
+type Story = Doc<"publications">["draft"];
+
+export function ResearchStory({ story }: { story: Story }) {
+  return <article className="mx-auto max-w-4xl"><header className="border-b border-line pb-8"><p className="text-sm font-medium text-accent">Research story</p><h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{story.title}</h1><p className="mt-4 whitespace-pre-wrap text-lg leading-relaxed text-muted">{story.summary}</p><p className="mt-5 text-sm font-medium">{story.authorName}{story.affiliation && <span className="font-normal text-muted"> · {story.affiliation}</span>}</p></header><div className="mt-8"><PrivateVisual visual={story.visual} /></div><div className="mt-10 grid gap-10 md:grid-cols-[1fr_260px]"><section><h2 className="text-xl font-semibold">About the researcher</h2><p className="mt-3 whitespace-pre-wrap leading-relaxed text-muted">{story.bio || "No biography provided."}</p></section><aside className="rounded-xl border border-line bg-surface p-5 text-sm"><h2 className="font-semibold">Research and sources</h2><a href={story.paperUrl} target="_blank" rel="noreferrer" className="mt-3 block text-accent underline underline-offset-2">{story.paperTitle} ↗</a>{story.datasetUrl && <a href={story.datasetUrl} target="_blank" rel="noreferrer" className="mt-3 block text-accent underline underline-offset-2">{story.datasetLabel} ↗</a>}{story.attribution && <p className="mt-4 whitespace-pre-wrap text-muted">{story.attribution}</p>}</aside></div></article>;
+}

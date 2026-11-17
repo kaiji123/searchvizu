@@ -2,7 +2,19 @@ import Link from "next/link";
 import { Container } from "@/components/site/SiteChrome";
 import { VizCard } from "@/components/site/VizCard";
 import { publicVisualisations } from "@/content/visualisations";
-import { packages, site } from "@/lib/site";
+import { site } from "@/lib/site";
+
+// Yearly plan shown on the home page. Billing is not automated yet.
+const plan = {
+  price: "£99",
+  perMonth: "£8.25",
+  features: [
+    "Submit visualisation requests through the researcher portal",
+    "Private project page for each request",
+    "Share files and receive deliverables",
+    "In-portal progress updates",
+  ],
+};
 
 const steps = [
   {
@@ -10,12 +22,12 @@ const steps = [
     body: "Share a paper, dataset, equations or a short explanation, plus where the visual will be used.",
   },
   {
-    title: "We scope and build",
-    body: "You get a fixed quote, then a working draft you can review in the browser. Accuracy comes before decoration.",
+    title: "We create together",
+    body: "We turn your research into an interactive visualisation, with a private space to follow its progress and review it.",
   },
   {
     title: "Publish, share, embed",
-    body: "You receive a hosted page, an embed snippet for your lab site and downloadable assets. Pages stay private until you approve them.",
+    body: "Explore your work privately and choose whether to share a public research page after reviewing it.",
   },
 ];
 
@@ -40,17 +52,17 @@ export default function Home() {
     <>
       <section className="border-b border-line">
         <Container className="py-16 sm:py-24">
-          <p className="mb-4 text-sm font-medium text-accent">Research visualisation studio</p>
+          <p className="mb-4 text-sm font-medium text-accent">A collection for curious minds</p>
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-            Turn complex research into interactive visuals people can explore.
+            A curious place to explore the world through data.
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-muted">{site.description}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/request" className="btn-primary">
-              Request a visualisation
+            <Link href="/work" className="btn-primary">
+              Explore the collection
             </Link>
-            <Link href="/work" className="btn-secondary !py-2.5">
-              See live examples
+            <Link href="/request" className="btn-secondary !py-2.5">
+              Request a visualisation
             </Link>
           </div>
         </Container>
@@ -60,7 +72,7 @@ export default function Home() {
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">Live examples</h2>
-            <p className="mt-1 text-muted">Every one runs in the browser. Open one and start adjusting it.</p>
+            <p className="mt-1 text-muted">Real data, big ideas and interactive experiments. Pick a story and explore.</p>
           </div>
           <Link href="/work" className="hidden text-sm font-medium text-accent sm:block">
             All work →
@@ -100,36 +112,19 @@ export default function Home() {
 
       <section id="pricing" className="scroll-mt-16">
         <Container className="py-16">
-          <h2 className="text-2xl font-semibold tracking-tight">Pricing</h2>
-          <p className="mt-1 text-muted">Fixed scope, agreed before work starts. Introductory rates for students and early-career researchers.</p>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {packages.map((p) => (
-              <div key={p.id} className="flex flex-col rounded-xl border border-line bg-surface p-6">
-                <h3 className="font-semibold">{p.name}</h3>
-                <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-semibold tracking-tight">{p.price}</span>
-                  <span className="text-sm text-muted">{p.priceNote}</span>
-                </div>
-                <p className="mt-3 text-sm text-muted">{p.summary}</p>
-                <ul className="mt-4 flex flex-col gap-1.5 text-sm">
-                  {p.includes.map((i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="text-accent" aria-hidden>
-                        ✓
-                      </span>
-                      {i}
-                    </li>
-                  ))}
-                </ul>
-                <Link href={`/request?package=${p.id}`} className="btn-secondary mt-6">
-                  Start with {p.name}
-                </Link>
-              </div>
-            ))}
+          <h2 className="text-2xl font-semibold tracking-tight">Subscription</h2>
+          <p className="mt-2 max-w-2xl text-muted">One simple yearly plan for researchers who want to bring their work to life.</p>
+          <div className="mt-8 max-w-md rounded-xl border border-line bg-surface p-6">
+            <h3 className="font-semibold">Researcher</h3>
+            <p className="mt-3"><span className="text-4xl font-semibold tracking-tight">{plan.price}</span> <span className="text-muted">/ year</span></p>
+            <p className="mt-1 text-sm text-muted">Billed annually. That&apos;s about {plan.perMonth} a month.</p>
+            <ul className="mt-5 space-y-2 text-sm">
+              {plan.features.map((f) => (
+                <li key={f} className="flex gap-2"><span aria-hidden="true" className="text-accent">✓</span>{f}</li>
+              ))}
+            </ul>
+            <Link href="/portal" className="btn-primary mt-6">Get started</Link>
           </div>
-          <p className="mt-4 text-xs text-muted">
-            Custom modelling, data cleaning and extra revisions are quoted separately.
-          </p>
         </Container>
       </section>
     </>

@@ -118,6 +118,42 @@ g[tabindex]:focus-visible .dag-node {
 .field {
   @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none transition focus:border-accent;
 }
+
+/* An editorial frame for the open-data studies. */
+.sample-cover { background: #182831; color: #e7eeeb; height: 165px; overflow: hidden; position: relative; padding: 15px 18px; }
+.sample-cover svg { position: absolute; inset: 23px 0 15px; width: 100%; height: 115px; }
+.sample-cover-label, .sample-cover-caption { position: absolute; font-size: 9px; letter-spacing: .14em; font-weight: 700; color: #b5c6c4; }
+.sample-cover-caption { bottom: 12px; right: 18px; }
+.field-notes { overflow: hidden; border-radius: 16px; color: #e7eeeb; background: #182831; box-shadow: 0 20px 55px #101e2822; }
+.field-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 28px 32px 22px; border-bottom: 1px solid #35444b; }
+.field-kicker, .field-badge, .field-control-title { font-size: 10px; letter-spacing: .16em; font-weight: 700; color: #aabeb8; }
+.field-heading h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); letter-spacing: -.04em; font-weight: 600; margin-top: 8px; }
+.field-heading p { color: #acbabd; font-size: 13px; margin-top: 4px; }
+.field-badge { border: 1px solid #566761; border-radius: 99px; padding: 8px 12px; white-space: nowrap; }
+.field-body { display: grid; grid-template-columns: minmax(0, 1fr) 235px; }
+.field-chart { min-width: 0; padding: 12px 15px 18px; }
+.field-chart svg { width: 100%; height: auto; display: block; }
+.field-chart > p[role] { min-height: 220px; display: grid; place-items: center; color: #cad6d3; }
+.field-count { text-align: center; font-size: 11px; color: #acbabd; }
+.field-controls { border-left: 1px solid #35444b; padding: 26px 22px; display: flex; flex-direction: column; gap: 18px; }
+.field-controls label { display: grid; gap: 7px; color: #c5d1ce; font-size: 12px; }
+.field-controls select { color: #e7eeeb; background: #243841; border: 1px solid #52655f; border-radius: 7px; padding: 9px; width: 100%; }
+.field-filters { display: grid; gap: 5px; margin-top: 10px; }
+.field-filters button { display: flex; align-items: center; gap: 9px; text-align: left; font-size: 12px; color: #c5d1ce; padding: 6px 8px; border-radius: 6px; }
+.field-filters button[aria-pressed="true"] { background: #3b504f; color: white; }
+.field-filters button span { width: 9px; height: 9px; border-radius: 50%; }
+.field-hint { color: #aabbb8; font-size: 12px; line-height: 1.5; margin-top: auto; }
+.field-source { border-top: 1px solid #35444b; padding: 14px 32px; font-size: 11px; color: #b7c9c5; }
+.field-source a { color: #e7eeeb; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 700px) {
+  .field-heading { padding: 22px 18px; }
+  .field-badge { display: none; }
+  .field-body { grid-template-columns: 1fr; }
+  .field-controls { border-left: 0; border-top: 1px solid #35444b; padding: 20px; }
+  .field-filters { display: flex; flex-wrap: wrap; }
+  .field-source { padding: 14px 18px; }
+}
 [data-invalid] .field {
   border-color: var(--viz-2);
 }
+ .research-cover{height:170px;position:relative;overflow:hidden;background:#101a22;color:#bdcbd0}.research-cover.carbon-spiral{background:#172521;color:#b8c9bd}.research-cover svg{position:absolute;inset:0;width:100%;height:100%}.research-cover span{position:absolute;z-index:1;font-size:9px;letter-spacing:.13em;font-weight:700;left:16px;top:14px}.research-cover span:last-child{top:auto;bottom:14px}

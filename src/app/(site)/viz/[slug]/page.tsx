@@ -55,8 +55,8 @@ export default async function VizPage({ params }: PageProps<"/viz/[slug]">) {
 
       <VizRenderer component={viz.component} />
 
-      <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_340px]">
-        <article className="flex max-w-3xl flex-col gap-10">
+      <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <article className="flex min-w-0 max-w-3xl flex-col gap-10">
           <Section title="About this visualisation">
             {viz.about.map((p) => (
               <p key={p}>{p}</p>
@@ -92,7 +92,7 @@ export default async function VizPage({ params }: PageProps<"/viz/[slug]">) {
           </Section>
         </article>
 
-        <aside className="flex flex-col gap-8 lg:sticky lg:top-6 lg:self-start">
+        <aside className="flex min-w-0 flex-col gap-8 lg:sticky lg:top-6 lg:self-start">
           <div className="rounded-xl border border-line bg-surface p-5 text-sm">
             <div className="text-xs uppercase tracking-wide text-muted">Research by</div>
             <div className="mt-1 font-semibold">
@@ -115,7 +115,7 @@ export default async function VizPage({ params }: PageProps<"/viz/[slug]">) {
           </div>
           <div className="rounded-xl border border-line bg-surface p-5 text-sm">
             <div className="font-semibold">Want one for your research?</div>
-            <p className="mt-1 text-muted">Send a paper or dataset and get a fixed quote.</p>
+            <p className="mt-1 text-muted">Tell us about your research and what you&apos;d like to explore.</p>
             <Link href="/request" className="btn-primary mt-4 w-full">
               Request a visualisation
             </Link>
