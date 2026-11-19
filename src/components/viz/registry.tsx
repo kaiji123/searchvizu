@@ -15,6 +15,8 @@ function Loading() {
 // Each visualisation is code-split and rendered only in the browser, so a
 // visitor to one page never downloads another page's libraries (e.g. Three.js).
 const components: Record<VizComponentKey, ComponentType> = {
+  "dna-crystal": dynamic(() => import("./CrystalStructures").then((module) => module.DnaCrystal), { ssr: false, loading: Loading }),
+  "gfp-crystal": dynamic(() => import("./CrystalStructures").then((module) => module.GfpCrystal), { ssr: false, loading: Loading }),
   "wine-fingerprints": dynamic(() => import("./WineFingerprints"), { ssr: false, loading: Loading }),
   "hemoglobin-3d": dynamic(() => import("./Hemoglobin3D"), { ssr: false, loading: Loading }),
   "life-lines": dynamic(() => import("./LifeLines"), { ssr: false, loading: Loading }),

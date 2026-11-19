@@ -12,7 +12,7 @@
 export type Visibility = "public" | "unlisted" | "draft";
 export type VizKind = "2d" | "3d";
 
-export type VizComponentKey = "sir-model" | "causal-dag" | "loss-surface" | "iris-data" | "penguin-data" | "planetary-orbits" | "carbon-spiral" | "seismic-year" | "life-lines" | "hemoglobin-3d" | "wine-fingerprints";
+export type VizComponentKey = "dna-crystal" | "gfp-crystal" | "sir-model" | "causal-dag" | "loss-surface" | "iris-data" | "penguin-data" | "planetary-orbits" | "carbon-spiral" | "seismic-year" | "life-lines" | "hemoglobin-3d" | "wine-fingerprints";
 
 export type Visualisation = {
   slug: string;
@@ -40,6 +40,36 @@ export type Visualisation = {
 };
 
 export const visualisations: Visualisation[] = [
+  {
+    slug: "a-turn-of-dna",
+    title: "A turn of DNA",
+    summary: "Rotate a crystal structure of B-DNA and step through its twelve base pairs.",
+    kind: "3d", discipline: "Structural biology", component: "dna-crystal", visibility: "public",
+    attribution: { owner: "H. R. Drew and colleagues · Worldwide Protein Data Bank", url: "https://www.rcsb.org/structure/1BNA" },
+    about: ["The Drew–Dickerson dodecamer is a synthetic DNA duplex whose 1.9 Å X-ray structure reveals how two strands twist around each other."],
+    howToRead: ["Drag or use the rotate buttons to turn the duplex. Move the slider to highlight each base pair in sequence. The two coloured tubes pass through the C1′ sugar atoms of the two strands."],
+    limitations: ["The tubes are interpolated and the rungs are schematic connectors between paired sugar atoms. This view omits individual bases, hydrogen bonds and solvent. The deposited model describes one sequence under crystal conditions."],
+    references: [
+      { label: "Drew et al. (1981). Structure of a B-DNA dodecamer: conformation and dynamics. PNAS.", url: "https://doi.org/10.1073/pnas.78.4.2179" },
+      { label: "PDB 1BNA. Deposited coordinates, adapted for display.", url: "https://www.rcsb.org/structure/1BNA" },
+      { label: "wwPDB archive data usage policy (CC0 1.0).", url: "https://www.rcsb.org/pages/usage-policy" },
+    ], version: 1, updated: "2026-11-19",
+  },
+  {
+    slug: "inside-the-green-glow",
+    title: "Inside the green glow",
+    summary: "Rotate green fluorescent protein and isolate the chromophore tucked inside its fold.",
+    kind: "3d", discipline: "Structural biology", component: "gfp-crystal", visibility: "public",
+    attribution: { owner: "M. Örmo and S. J. Remington · Worldwide Protein Data Bank", url: "https://www.rcsb.org/structure/1EMA" },
+    about: ["Green fluorescent protein from Aequorea victoria folds around the chromophore responsible for its fluorescence. This experimentally determined 1.9 Å crystal structure is of the Thr65 variant."],
+    howToRead: ["Rotate the model to see how the protein fold surrounds the green chromophore atoms. Toggle the protein trace to isolate the chromophore."],
+    limitations: ["The tube interpolates selected backbone coordinates. Sphere sizes and colours are illustrative. The crystal model captures a static structure, and the rendering does not simulate fluorescence."],
+    references: [
+      { label: "Örmo et al. (1996). Crystal structure of the Aequorea victoria green fluorescent protein. Science.", url: "https://pubmed.ncbi.nlm.nih.gov/8703075/" },
+      { label: "PDB 1EMA. Deposited coordinates, adapted for display.", url: "https://www.rcsb.org/structure/1EMA" },
+      { label: "wwPDB archive data usage policy (CC0 1.0).", url: "https://www.rcsb.org/pages/usage-policy" },
+    ], version: 1, updated: "2026-11-19",
+  },
   {
     slug: "wine-chemical-fingerprints", title: "A fingerprint in thirteen measures",
     summary: "Explore the chemistry of 178 wine samples through thirteen measurements and three cultivar groups.",
