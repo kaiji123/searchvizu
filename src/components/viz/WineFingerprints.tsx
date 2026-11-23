@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { PlaybackButton, useSequencePlayback } from "./playback";
 import "./research-samples.css";
 
 type Sample = { id: number; group: number; values: number[] };
@@ -30,12 +31,18 @@ export default function WineFingerprints() {
     return { min, max, groups };
   }, [samples]);
   const sample = samples.find((row) => row.id === Number(sampleId));
+  const examples = [1, 2, 3].flatMap((group) => {
+    const example = samples.find((row) => row.group === group);
+    return example ? [String(example.id)] : [];
+  });
+  const playback = useSequencePlayback(examples, sampleId, setSampleId, 1400);
   const polygon = (values: number[]) => values.map((value, i) => point(i, 190 * ((value - analysis!.min[i]) / (analysis!.max[i] - analysis!.min[i]))).map((coordinate) => coordinate.toFixed(1)).join(",")).join(" ");
   return <div className="research-viz wine-viz">
     <div className="research-header"><span>FIELD NOTES / 06</span><span>UCI MACHINE LEARNING REPOSITORY ↗</span></div>
     <div className="research-intro"><div><p className="research-eyebrow">THIRTEEN CHEMICAL MEASUREMENTS</p><h2>A fingerprint<br /><em>in the data.</em></h2></div><p>Three cultivars, 178 samples and thirteen ways to discover how their chemical profiles differ.</p></div>
     {error ? <p role="alert">The wine dataset could not be loaded. Please try refreshing.</p> : !analysis ? <p role="status">Loading chemical measurements…</p> : <>
-      <div className="wine-toolbar"><div className="wine-groups">{analysis.groups.map((group, i) => <button type="button" key={i} aria-pressed={visible[i]} onClick={() => setVisible((state) => state.map((v, j) => i === j ? !v : v))}><span style={{ background: colours[i] }}/><strong>Class {i + 1}</strong><small>n={group.count}</small></button>)}</div><label htmlFor="wine-sample">COMPARE AN INDIVIDUAL SAMPLE<select id="wine-sample" value={sampleId} onChange={(event) => setSampleId(event.target.value)}><option value="">Class averages only</option>{samples.map((row) => <option key={row.id} value={row.id}>Sample {row.id} · class {row.group}</option>)}</select></label></div>
+      <PlaybackButton {...playback} description="sample from each class" className="research-action mt-4" />
+      <div className="wine-toolbar"><div className="wine-groups">{analysis.groups.map((group, i) => <button type="button" key={i} aria-pressed={visible[i]} onClick={() => setVisible((state) => state.map((v, j) => i === j ? !v : v))}><span style={{ background: colours[i] }}/><strong>Class {i + 1}</strong><small>n={group.count}</small></button>)}</div><label htmlFor="wine-sample">COMPARE AN INDIVIDUAL SAMPLE<select id="wine-sample" value={sampleId} onChange={(event) => playback.select(event.target.value)}><option value="">Class averages only</option>{samples.map((row) => <option key={row.id} value={row.id}>Sample {row.id} · class {row.group}</option>)}</select></label></div>
       <div className="wine-chart"><svg viewBox="0 0 700 600" role="img" aria-label="Thirteen measurements shown on separate normalised radial axes. The table below contains the original values and class averages.">
         {[.25, .5, .75, 1].map((fraction) => <circle key={fraction} cx="350" cy="300" r={190 * fraction} fill="none" stroke="#ffffff" strokeOpacity=".14"/>)}
         {features.map((feature, i) => { const [x, y] = point(i, 190), [labelX, labelY] = point(i, 218); const anchor = labelX < 335 ? "end" : labelX > 365 ? "start" : "middle"; return <g key={feature}><line x1="350" y1="300" x2={x} y2={y} stroke="#ffffff" strokeOpacity=".16"/><text x={labelX} y={labelY} textAnchor={anchor} dominantBaseline="middle" className="wine-axis">{shortNames[i]}</text></g>; })}

@@ -156,4 +156,4 @@ g[tabindex]:focus-visible .dag-node {
 [data-invalid] .field {
   border-color: var(--viz-2);
 }
- .research-cover{height:170px;position:relative;overflow:hidden;background:#101a22;color:#bdcbd0}.research-cover.carbon-spiral{background:#172521;color:#b8c9bd}.research-cover svg{position:absolute;inset:0;width:100%;height:100%}.research-cover span{position:absolute;z-index:1;font-size:9px;letter-spacing:.13em;font-weight:700;left:16px;top:14px}.research-cover span:last-child{top:auto;bottom:14px}
+ .research-cover{height:170px;position:relative;overflow:hidden;background:#101a22;color:#bdcbd0}.research-cover.carbon-spiral{background:#172521;color:#b8c9bd}.research-cover.exoplanet-atlas{background:#141b2a;color:#c5cbd7}.research-cover.warming-record{background:#262126;color:#d6c1b9}.research-cover.health-income{background:#182724;color:#c4d8ce}.research-cover svg{position:absolute;inset:0;width:100%;height:100%}.research-cover span{position:absolute;z-index:1;font-size:9px;letter-spacing:.13em;font-weight:700;left:16px;top:14px}.research-cover span:last-child{top:auto;bottom:14px}

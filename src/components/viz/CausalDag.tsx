@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Dag, type Edge, type PathResult } from "./causal";
+import { PlaybackButton, useSequencePlayback } from "./playback";
 
 type NodeDef = { id: string; label: string; x: number; y: number };
 
@@ -85,6 +86,7 @@ export default function CausalDag() {
     });
   };
 
+  const playback = useSequencePlayback(analysis.results.map((_, index) => index), focus, setFocus, 1200);
   const focused = focus !== null ? analysis.results[focus] : null;
   const focusEdges = new Set<string>();
   if (focused) {
@@ -205,15 +207,16 @@ export default function CausalDag() {
 
           <div>
             <h3 className="mb-2 text-sm font-semibold">Paths from exposure to outcome</h3>
-            <ul className="flex flex-col gap-1.5" onPointerLeave={() => setFocus(null)}>
+            <PlaybackButton {...playback} description="causal paths" className="btn-secondary mb-3" />
+            <ul className="flex flex-col gap-1.5" onPointerLeave={() => { if (!playback.playing) setFocus(null); }}>
               {analysis.results.map((r, i) => (
                 <li key={r.nodes.join()}>
                   <button
                     type="button"
-                    onPointerEnter={() => setFocus(i)}
-                    onFocus={() => setFocus(i)}
-                    onBlur={() => setFocus(null)}
-                    onClick={() => setFocus(focus === i ? null : i)}
+                    onPointerEnter={() => { if (!playback.playing) setFocus(i); }}
+                    onFocus={() => { if (!playback.playing) setFocus(i); }}
+                    onBlur={() => { if (!playback.playing) setFocus(null); }}
+                    onClick={() => { playback.stop(); setFocus(focus === i ? null : i); }}
                     className="w-full rounded-md border border-line px-2.5 py-2 text-left text-xs transition hover:bg-canvas"
                   >
                     <div className="flex items-center gap-2">

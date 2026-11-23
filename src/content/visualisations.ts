@@ -12,7 +12,8 @@
 export type Visibility = "public" | "unlisted" | "draft";
 export type VizKind = "2d" | "3d";
 
-export type VizComponentKey = "dna-crystal" | "gfp-crystal" | "sir-model" | "causal-dag" | "loss-surface" | "iris-data" | "penguin-data" | "planetary-orbits" | "carbon-spiral" | "seismic-year" | "life-lines" | "hemoglobin-3d" | "wine-fingerprints";
+type CrystalComponentKey = "dna-crystal" | "gfp-crystal";
+export type VizComponentKey = CrystalComponentKey | "sir-model" | "causal-dag" | "loss-surface" | "iris-data" | "penguin-data" | "planetary-orbits" | "carbon-spiral" | "seismic-year" | "life-lines" | "hemoglobin-3d" | "wine-fingerprints" | "exoplanet-atlas" | "warming-record" | "health-income" | "small-world-network" | "growing-hubs-network" | "lorenz-attractor" | "henon-attractor" | "reaction-diffusion" | "einstein-ring" | "dart-orbit";
 
 export type Visualisation = {
   slug: string;
@@ -40,6 +41,93 @@ export type Visualisation = {
 };
 
 export const visualisations: Visualisation[] = [
+  {
+    slug: "dart-changed-an-orbit",
+    title: "The 33 minutes DART took off an orbit",
+    summary: "Compare the measured periods of Dimorphos before and after NASA’s DART mission and see how quickly the difference adds up.",
+    kind: "2d", discipline: "Planetary science", component: "dart-orbit", visibility: "public",
+    attribution: { owner: "Cristina A. Thomas and colleagues", url: "https://doi.org/10.1038/s41586-023-05805-2" },
+    about: ["After DART struck Dimorphos in September 2022, the moonlet took about 33 minutes less to orbit Didymos. Thomas and colleagues used ground-based brightness measurements and radar observations to estimate the change. Their published periods drive the two markers here."],
+    howToRead: ["Start both markers at the top, then increase the elapsed time. The filled marker follows the new period and gradually pulls ahead of the projected position at the old period.", "Choose One extra orbit to see the markers nearly overlap after the post-impact orbit has gained a full lap."],
+    limitations: ["The diagram compares phase using idealised circular paths of equal drawn radius and a common starting angle. The body sizes, orbital shape, and positions are schematic. The displayed periods are from the 2023 publication."],
+    references: [{ label: "Thomas et al. (2023). Orbital period change of Dimorphos due to the DART kinetic impact. Nature.", url: "https://doi.org/10.1038/s41586-023-05805-2" }],
+    version: 1, updated: "2026-11-23",
+  },
+  {
+    slug: "einstein-ring",
+    title: "When gravity makes a ring",
+    summary: "Move a background source behind a point-mass lens and watch two images merge into an Einstein ring.",
+    kind: "2d", discipline: "Gravitational lensing", component: "einstein-ring", visibility: "public",
+    attribution: { owner: "Albert Einstein and Bohdan Paczyński", url: "https://doi.org/10.1126/science.84.2188.506" },
+    about: ["Einstein’s 1936 note described how one star can bend the light of another into a ring when the observer, source, and lens align. Paczyński later used a point-mass lens model to study how unseen foreground objects could be detected through changes in the combined brightness of the images."],
+    howToRead: ["Bring the source offset to zero to see a symmetric ring. Increase it until the lens lies outside the source disk and two distinct images appear. Both panels use angular distances measured in units of the Einstein radius.", "Magnification compares the total lensed flux with the unlensed flux. The lens preserves surface brightness in this model, so the increased apparent area makes the images brighter in total."],
+    limitations: ["The model assumes an isolated point mass and a circular source with uniform surface brightness. It omits light from the foreground object, lens opacity, limb darkening, and telescope resolution."],
+    references: [
+      { label: "Einstein (1936). Lens-like action of a star by the deviation of light in the gravitational field. Science.", url: "https://doi.org/10.1126/science.84.2188.506" },
+      { label: "Paczyński (1986). Gravitational microlensing by the galactic halo. The Astrophysical Journal.", url: "https://articles.adsabs.harvard.edu/pdf/1986ApJ...304....1P" },
+    ],
+    version: 1, updated: "2026-11-23",
+  },
+  {
+    slug: "lorenz-attractor",
+    title: "Two paths through the Lorenz attractor",
+    summary: "Rotate a 3D phase portrait and scrub through two trajectories that start almost in the same place.",
+    kind: "3d", discipline: "Nonlinear dynamics", component: "lorenz-attractor", visibility: "public",
+    attribution: { owner: "Edward N. Lorenz", url: "https://wind.mit.edu/~emanuel/Lorenz/EdLorenz/Deterministic_63.pdf" },
+    about: ["Lorenz derived a simplified three-variable system for fluid convection and found nonperiodic solutions that were sensitive to their initial conditions. This visualisation uses his standard parameter set (σ = 10, ρ = 28, β = 8/3) to compare two trajectories that differ only in their starting x coordinate."],
+    howToRead: ["Set the perturbation to 0.001 and drag model time from zero to about 25. Compare the markers and watch the separation grow unevenly over time.", "The faint line shows the full reference trajectory. Solid and dashed trails show the last three model time units. Adjust azimuth and elevation to look at the same states from a different angle."],
+    limitations: ["The trajectories use fourth-order Runge–Kutta integration with a step of 0.005 model time units. Numerical error can compound over long runs. The state-space variables describe a simplified convection model."],
+    references: [{ label: "Lorenz (1963). Deterministic Nonperiodic Flow. Journal of the Atmospheric Sciences.", url: "https://wind.mit.edu/~emanuel/Lorenz/EdLorenz/Deterministic_63.pdf" }],
+    version: 1, updated: "2026-11-23",
+  },
+  {
+    slug: "henon-attractor",
+    title: "Inside the Hénon attractor",
+    summary: "Zoom into a folded point cloud and see individual bands split into finer ones.",
+    kind: "2d", discipline: "Nonlinear dynamics", component: "henon-attractor", visibility: "public",
+    attribution: { owner: "Michel Hénon", url: "https://doi.org/10.1007/BF01608556" },
+    about: ["Hénon followed Lorenz’s work with a simpler system. The Hénon map iterates a two-dimensional quadratic rule. For a = 1.4 and b = 0.3, the orbit from (0, 0) approaches a bounded set with intricate structure."],
+    howToRead: ["Choose Bands to magnify the outlined rectangle near the unstable fixed point. Choose Fine detail to magnify the next rectangle. Each view samples the same orbit with a larger sample at finer scales.", "The horizontal and vertical axes show the state variables x and y. Each dot is a successive state after the first 100 iterations are skipped."],
+    limitations: ["The coordinate scales differ between axes to make the bands easier to see. Finite samples and pixel resolution limit the visible detail. The diagram illustrates numerical evidence for nested bands."],
+    references: [{ label: "Hénon (1976). A two-dimensional mapping with a strange attractor. Communications in Mathematical Physics.", url: "https://doi.org/10.1007/BF01608556" }],
+    version: 1, updated: "2026-11-23",
+  },
+  {
+    slug: "patterns-from-reaction-diffusion",
+    title: "Patterns from reaction and diffusion",
+    summary: "Change the rates in the Gray–Scott model and watch the same starting patch grow into spots, stripes, or fade away.",
+    kind: "2d", discipline: "Pattern formation", component: "reaction-diffusion", visibility: "public",
+    attribution: { owner: "John E. Pearson", url: "https://doi.org/10.1126/science.261.5118.189" },
+    about: ["Pearson used the Gray–Scott model to study how two interacting chemicals can produce complex spatial patterns. A small region starts with more V than the surrounding field. Reaction amplifies V where U is available, while diffusion moves both chemicals and the removal term depletes V."],
+    howToRead: ["Switch between the three rate presets to compare the same initial disturbance after 1,800 steps. Restart from the seed to see the original patch, then play or advance 100 steps at a time.", "Colour shows the concentration of V on the same scale for every preset. Opposite edges of the square connect."],
+    limitations: ["This browser simulation uses a 96 by 96 grid, a five-point finite difference stencil, and forward Euler updates. The smaller domain, seed, diffusion coefficients in grid units, and selected rates are illustrative settings. Pearson used a 256 by 256 grid for the paper’s main parameter survey."],
+    references: [{ label: "Pearson (1993). Complex Patterns in a Simple System. Science.", url: "https://doi.org/10.1126/science.261.5118.189" }, { label: "Author’s preprint with equations and simulation methods.", url: "https://arxiv.org/abs/patt-sol/9304003" }],
+    version: 1, updated: "2026-11-23",
+  },
+  {
+    slug: "shortcuts-in-a-small-world",
+    title: "Shortcuts in a small world",
+    summary: "Rewire a ring of 72 nodes and see how a few new connections can shorten paths across the network.",
+    kind: "2d", discipline: "Network science", component: "small-world-network", visibility: "public",
+    attribution: { owner: "Duncan J. Watts and Steven H. Strogatz", url: "https://doi.org/10.1038/30918" },
+    about: ["Watts and Strogatz showed that a network can retain tightly connected neighbourhoods even as shortcuts bring distant nodes within a few hops of one another. This simulation starts with a ring where each node is linked to its three nearest neighbours on either side."],
+    howToRead: ["Start at 0% and raise the rewiring probability. Compare how quickly mean path length falls with how much local clustering remains.", "Dashed edges were rewired. The solid highlight follows one shortest route between the two marked nodes. Mean clustering measures how often a node’s neighbours are themselves connected, averaged across the network."],
+    limitations: ["Each setting displays a single simulated network. Resampling shows how much the result depends on the random draw. The paper’s Figure 2 averaged repeated runs on larger networks."],
+    references: [{ label: "Watts and Strogatz (1998). Collective dynamics of ‘small-world’ networks. Nature.", url: "https://doi.org/10.1038/30918" }],
+    version: 1, updated: "2026-11-23",
+  },
+  {
+    slug: "how-networks-grow-hubs",
+    title: "How networks grow hubs",
+    summary: "Grow a network one node at a time and compare what happens when newcomers favour already well-connected nodes.",
+    kind: "2d", discipline: "Network science", component: "growing-hubs-network", visibility: "public",
+    attribution: { owner: "Albert-László Barabási and Réka Albert", url: "https://doi.org/10.1126/science.286.5439.509" },
+    about: ["Barabási and Albert studied what happens when networks grow and new nodes are more likely to link to nodes that already have many connections. This simulation starts with a triangle and gives each newcomer two distinct links to existing nodes."],
+    howToRead: ["Increase network size to watch older nodes accumulate connections. Compare preferential attachment, where a node’s chance of being picked is proportional to its degree, with uniform attachment, where every eligible node has the same chance.", "The bars count nodes in each degree range. The diagram highlights one node with the highest degree and its links."],
+    limitations: ["The graph is a small simulation. Its binned degree counts illustrate hub formation. Estimating a power law would require a much larger sample and a statistical fit."],
+    references: [{ label: "Barabási and Albert (1999). Emergence of scaling in random networks. Science.", url: "https://doi.org/10.1126/science.286.5439.509" }],
+    version: 1, updated: "2026-11-23",
+  },
   {
     slug: "a-turn-of-dna",
     title: "A turn of DNA",
@@ -69,6 +157,46 @@ export const visualisations: Visualisation[] = [
       { label: "PDB 1EMA. Deposited coordinates, adapted for display.", url: "https://www.rcsb.org/structure/1EMA" },
       { label: "wwPDB archive data usage policy (CC0 1.0).", url: "https://www.rcsb.org/pages/usage-policy" },
     ], version: 1, updated: "2026-11-19",
+  },
+  {
+    slug: "health-and-income", title: "Money, health and the space between",
+    summary: "Compare economic output and life expectancy across 204 countries and economies.",
+    kind: "2d", discipline: "Global development · Open data", component: "health-income", visibility: "public",
+    attribution: { owner: "World Bank World Development Indicators", url: "https://databank.worldbank.org/source/world-development-indicators" },
+    about: ["How do the resources available in an economy relate to the health of its population? This comparison places two commonly used World Bank indicators side by side for 2023.", "Each point is a country or economy for which both GDP per capita in current US dollars and period life expectancy at birth were available in the source snapshots."],
+    howToRead: ["The horizontal axis is GDP per capita on a logarithmic scale; equal horizontal distances represent equal ratios. The vertical axis is life expectancy in years.", "Filter by region or choose an economy to examine its two values. Each point represents an economy, regardless of its population size."],
+    limitations: ["A cross-sectional association is not evidence that GDP causes a particular life expectancy. The chart omits inequality, public services, conflict, demographics and many other factors.", "GDP per capita in current US dollars is sensitive to exchange rates and is not adjusted for local purchasing power. Life expectancy is a period estimate, not a forecast for an individual. Source coverage and uncertainty vary; only economies with both data points appear."],
+    references: [
+      { label: "World Bank World Development Indicators: GDP per capita (current US$), 2023; snapshot retrieved 17 November 2026.", url: "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD" },
+      { label: "World Bank World Development Indicators: life expectancy at birth, 2023; snapshot retrieved 16 November 2026.", url: "https://data.worldbank.org/indicator/SP.DYN.LE00.IN" },
+      { label: "World Bank open-data licensing and terms of use.", url: "https://datacatalog.worldbank.org/public-licenses" },
+    ], version: 1, updated: "2026-11-17",
+  },
+  {
+    slug: "beyond-our-solar-system", title: "Beyond our solar system",
+    summary: "Explore thousands of confirmed exoplanets by their size, orbital period and method of discovery.",
+    kind: "2d", discipline: "Astronomy · Open data", component: "exoplanet-atlas", visibility: "public",
+    attribution: { owner: "NASA Exoplanet Archive", url: "https://exoplanetarchive.ipac.caltech.edu/" },
+    about: ["The confirmed planets beyond our solar system vary enormously in size and in the time they take to orbit their stars. Each point in this atlas represents a planet in the NASA Exoplanet Archive's composite catalogue.", "The snapshot contains 6,470 confirmed planets. The chart includes those with positive orbital period and radius estimates and a discovery year; filters make the uneven history of their discovery visible."],
+    howToRead: ["Horizontal position shows orbital period in days; vertical position shows estimated radius in Earth radii. Both axes use logarithmic scales: equal distances represent equal ratios, not equal differences.", "Filter by discovery method or move the year slider. Choose a dot or use the planet selector to see its properties and distance, where available."],
+    limitations: ["The planets shown are not representative of all planets: observations are biased towards objects that current instruments and discovery methods can detect. The graphic is not a map of positions, and does not establish habitability.", "Composite parameters can come from different studies and some radii are calculated from mass rather than directly measured. Estimates, discovery classifications and the archive itself may change; uncertainty ranges are not displayed. Planets missing a plotted value or discovery year are omitted."],
+    references: [
+      { label: "NASA Exoplanet Archive, Planetary Systems Composite Parameters, snapshot retrieved 17 November 2026.", url: "https://exoplanetarchive.ipac.caltech.edu/docs/API_PS_columns.html" },
+      { label: "Christiansen et al. (2025), The NASA Exoplanet Archive and Exoplanet Follow-up Observing Program: Data, Tools, and Usage.", url: "https://doi.org/10.3847/PSJ/ade3c2" },
+    ], version: 1, updated: "2026-11-17",
+  },
+  {
+    slug: "shape-of-a-warming-world", title: "The shape of a warming world",
+    summary: "Compare 176 years of global surface temperature anomalies in NOAA's land and ocean record.",
+    kind: "2d", discipline: "Climate science · Open data", component: "warming-record", visibility: "public",
+    attribution: { owner: "NOAA National Centers for Environmental Information", url: "https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series" },
+    about: ["Global temperature is not a single thermometer reading. NOAA combines land and ocean observations into an estimate of how each year's average differs from a reference period.", "This original interactive uses NOAA Climate at a Glance annual global land and ocean temperature departures from 1850 through 2025, relative to the 1901–2000 average."],
+    howToRead: ["Each vertical mark represents an annual temperature departure in degrees Celsius. Blue indicates a year below the twentieth-century average; warmer colours indicate years above it.", "Use the two year sliders to inspect and compare individual annual values. The line joins the reported annual estimates."],
+    limitations: ["The baseline is 1901–2000, not a pre-industrial reference. Annual departures are global averages, not local temperatures, and the difference between two years is not a long-term trend.", "Coverage, observation methods, and uncertainty change over time. The source values are rounded and may be revised; uncertainty intervals are not shown."],
+    references: [
+      { label: "NOAA National Centers for Environmental Information, Climate at a Glance: Global Time Series, annual global land and ocean temperature departures, snapshot retrieved 17 November 2026.", url: "https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/global/time-series" },
+      { label: "NOAA Global Surface Temperature Dataset (NOAAGlobalTemp), methodology and dataset documentation.", url: "https://www.ncei.noaa.gov/products/land-based-station/noaa-global-temp" },
+    ], version: 1, updated: "2026-11-17",
   },
   {
     slug: "wine-chemical-fingerprints", title: "A fingerprint in thirteen measures",

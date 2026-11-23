@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { PlaybackButton, useRangePlayback } from "./playback";
 import "./research-samples.css";
 
 type Reading = { year: number; month: number; ppm: number; estimated: boolean };
@@ -30,6 +31,7 @@ export default function CarbonSpiral() {
   const current = useMemo(() => readings.filter((reading) => reading.year === year), [readings, year]);
   const lastYear = readings.at(-1)?.year ?? 2026;
   const minYear = readings[0]?.year ?? 1958;
+  const playback = useRangePlayback(year, setYear, { min: minYear, max: lastYear, step: 1, delay: 180, ready: readings.length > 0 });
   const polar = (r: number, month: number) => { const a = (month - 1) * Math.PI / 6 - Math.PI / 2; return [250 + r * Math.cos(a), 250 + r * Math.sin(a)]; };
   return <div className="research-viz carbon-viz">
     <div className="research-header"><span>FIELD NOTES / 02</span><span>NOAA × SCRIPPS ↗</span></div>
@@ -42,7 +44,8 @@ export default function CarbonSpiral() {
         <text x="250" y="244" textAnchor="middle" className="carbon-center-year">{year}</text><text x="250" y="264" textAnchor="middle" className="carbon-center-label">SELECTED YEAR</text>
       </svg><div className="carbon-scale"><span>310 ppm</span><div /><span>435 ppm</span></div></div>
       <div className="carbon-details"><p className="research-eyebrow">EXPLORE THE RECORD</p><h3>{year}</h3><p>Monthly mean CO₂ <span>· ppm</span></p><div className="carbon-months">{months.map((month, i) => { const p = current.find((entry) => entry.month === i + 1); return <div key={month}><span>{month}</span><strong style={{ color: p ? colour(p.ppm) : undefined }}>{p ? p.ppm.toFixed(2) : "—"}{p?.estimated ? "*" : ""}</strong></div>; })}</div><p className="carbon-detail-note">{current.length < 12 ? "This year has an incomplete record. " : ""}* indicates a source-interpolated NOAA month. Earlier Scripps interpolation flags are unavailable.</p></div></div>
-      <div className="carbon-control"><label htmlFor="carbon-year">YEAR <strong>{year}</strong></label><input id="carbon-year" type="range" min={minYear} max={lastYear} step="1" value={year} onChange={(event) => setYear(Number(event.target.value))}/><div><span>{minYear}</span><span>{lastYear}</span></div></div>
+      <PlaybackButton {...playback} description="carbon dioxide record" className="research-action mt-4" />
+      <div className="carbon-control"><label htmlFor="carbon-year">YEAR <strong>{year}</strong></label><input id="carbon-year" type="range" min={minYear} max={lastYear} step="1" value={year} onChange={(event) => playback.select(Number(event.target.value))}/><div><span>{minYear}</span><span>{lastYear}</span></div></div>
       <p className="research-note">Outward = later years · Around = months · Colour = CO₂ concentration. NOAA combines Scripps and NOAA data; Maunakea supplied observations during the 2022–23 eruption interruption.</p>
     </>}
     <p className="research-source">Data: <a href="https://gml.noaa.gov/ccgg/trends/data.html" target="_blank" rel="noreferrer">Xin Lan, NOAA/GML, and Ralph Keeling, Scripps Institution of Oceanography</a> · <a href="https://doi.org/10.1111/j.2153-3490.1976.tb00701.x" target="_blank" rel="noreferrer">Keeling et al. 1976</a>. Snapshot: 9 October 2026.</p>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PlaybackButton, useSequencePlayback } from "./playback";
 
 type Row = { group: string; values: number[] };
 type Config = {
@@ -30,6 +31,8 @@ export default function FieldNotes({ dataset }: { dataset: "iris" | "penguins" }
   const [x, setX] = useState(dataset === "iris" ? 2 : 0);
   const [y, setY] = useState(dataset === "iris" ? 3 : 2);
   const [selected, setSelected] = useState("All");
+  const groups = ["All", ...c.groups];
+  const playback = useSequencePlayback(rows.length ? groups : [], selected, setSelected, 1300);
   useEffect(() => {
     const controller = new AbortController();
     fetch(c.file, { signal: controller.signal }).then((response) => {
@@ -69,7 +72,7 @@ export default function FieldNotes({ dataset }: { dataset: "iris" | "penguins" }
           </svg>}
           <p className="field-count">{visible.length} observations shown {rows.length > 0 && `· ${rows.length - usable.length} missing a selected measurement`}</p>
         </div>
-        <div className="field-controls"><p className="field-control-title">MAKE A COMPARISON</p><label>Horizontal axis<select value={x} onChange={(e) => setX(Number(e.target.value))}>{c.fields.map((f, i) => <option key={f} value={i}>{f}</option>)}</select></label><label>Vertical axis<select value={y} onChange={(e) => setY(Number(e.target.value))}>{c.fields.map((f, i) => <option key={f} value={i}>{f}</option>)}</select></label><div><p className="field-control-title">FILTER BY SPECIES</p><div className="field-filters">{["All", ...c.groups].map((group, i) => <button key={group} type="button" aria-pressed={selected === group} onClick={() => setSelected(group)}><span style={{ background: i ? c.colors[i-1] : "#e5ecea" }}/>{group}</button>)}</div></div><p className="field-hint">Each dot is one individual. Change the axes to find patterns and overlaps.</p></div>
+        <div className="field-controls"><PlaybackButton {...playback} description="species comparison" className="btn-secondary mb-3 justify-self-start" /><p className="field-control-title">MAKE A COMPARISON</p><label>Horizontal axis<select value={x} onChange={(e) => setX(Number(e.target.value))}>{c.fields.map((f, i) => <option key={f} value={i}>{f}</option>)}</select></label><label>Vertical axis<select value={y} onChange={(e) => setY(Number(e.target.value))}>{c.fields.map((f, i) => <option key={f} value={i}>{f}</option>)}</select></label><div><p className="field-control-title">FILTER BY SPECIES</p><div className="field-filters">{groups.map((group, i) => <button key={group} type="button" aria-pressed={selected === group} onClick={() => playback.select(group)}><span style={{ background: i ? c.colors[i-1] : "#e5ecea" }}/>{group}</button>)}</div></div><p className="field-hint">Each dot is one individual. Change the axes to find patterns and overlaps.</p></div>
       </div>
       <div className="field-source">Data: <a href={c.source} target="_blank" rel="noreferrer">{c.sourceLabel}</a> · {c.license} · <a href={c.paper} target="_blank" rel="noreferrer">Research paper ↗</a></div>
     </div>

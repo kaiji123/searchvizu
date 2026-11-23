@@ -4,6 +4,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { Box3, CatmullRomCurve3, Quaternion, Vector3 } from "three";
+import { PlaybackButton, useRangePlayback } from "./playback";
 import "./research-samples.css";
 
 type StructureId = "1BNA" | "1EMA";
@@ -77,6 +78,8 @@ function CrystalViewer({ id }: { id: StructureId }) {
   const [pair, setPair] = useState(0);
   const [angle, setAngle] = useState(0.35);
   const [zoom, setZoom] = useState(1);
+  const [spinning, setSpinning] = useState(false);
+  const pairs = useRangePlayback(pair, setPair, { min: 0, max: 11, step: 1, delay: 650 });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -109,7 +112,7 @@ function CrystalViewer({ id }: { id: StructureId }) {
         <div className="protein-layout">
           <div className="protein-scene">
             <Canvas camera={{ position: [0, 0, structure.size * 1.45], fov: 35 }}
-              dpr={[1, 1.5]} frameloop="demand" fallback={<p>3D rendering is unavailable on this device.</p>}>
+              dpr={[1, 1.5]} frameloop={spinning ? "always" : "demand"} fallback={<p>3D rendering is unavailable on this device.</p>}>
               <ambientLight intensity={1.2} />
               <directionalLight position={[20, 30, 40]} intensity={2.8} />
               <group rotation={[0.25, angle, 0]} scale={zoom}>
@@ -135,7 +138,7 @@ function CrystalViewer({ id }: { id: StructureId }) {
                   </mesh>
                 ))}
               </group>
-              <OrbitControls enablePan={false} minDistance={structure.size * 0.55} maxDistance={structure.size * 2.8} />
+              <OrbitControls autoRotate={spinning} autoRotateSpeed={1.4} enablePan={false} minDistance={structure.size * 0.55} maxDistance={structure.size * 2.8} />
             </Canvas>
             <div className="protein-scene-label">DRAG TO ROTATE · SCROLL OR PINCH TO ZOOM</div>
           </div>
@@ -145,9 +148,12 @@ function CrystalViewer({ id }: { id: StructureId }) {
             {dna && <label className="block">
               <span>Pair {pair + 1} of 12 · {structure.pairLabels[pair]}</span>
               <input className="block w-full" type="range" min={1} max={12} value={pair + 1}
-                onChange={(event) => setPair(Number(event.currentTarget.value) - 1)} />
+                onChange={(event) => pairs.select(Number(event.currentTarget.value) - 1)} />
             </label>}
             <div className="protein-controls">
+              {dna ? <PlaybackButton {...pairs} description="base pairs" className="research-action" /> : (
+                <PlaybackButton playing={spinning} toggle={() => setSpinning((value) => !value)} description="structure rotation" className="research-action" />
+              )}
               <button type="button" aria-pressed={showTrace} onClick={() => setShowTrace(!showTrace)}>{dna ? "Strand traces" : "Protein trace"}</button>
               <button type="button" onClick={() => setAngle(angle - Math.PI / 6)}>Rotate left</button>
               <button type="button" onClick={() => setAngle(angle + Math.PI / 6)}>Rotate right</button>

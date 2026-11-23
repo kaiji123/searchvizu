@@ -2,9 +2,10 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Line, OrbitControls } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from "react";
+import { useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { Slider, Stat } from "./controls";
+import { PlaybackButton } from "./playback";
 
 // ---------------------------------------------------------------- maths ---
 
@@ -141,22 +142,16 @@ function Trail({ points, color, progressRef }: { points: THREE.Vector3[]; color:
   );
 }
 
-function Clock({ progressRef, playing }: { progressRef: RefObject<number>; playing: boolean }) {
+function Clock({ progressRef, playing, finish }: { progressRef: RefObject<number>; playing: boolean; finish: () => void }) {
   useFrame((_, dt) => {
-    if (playing && progressRef.current < STEPS) progressRef.current = Math.min(STEPS, progressRef.current + dt * 75);
+    if (!playing || progressRef.current >= STEPS) return;
+    progressRef.current = Math.min(STEPS, progressRef.current + Math.min(dt, 0.1) * 75);
+    if (progressRef.current === STEPS) finish();
   });
   return null;
 }
 
 // ------------------------------------------------------------------- ui ---
-
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
-function subscribeReducedMotion(cb: () => void) {
-  const mq = window.matchMedia(REDUCED_MOTION);
-  mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
-}
-const getReducedMotion = () => window.matchMedia(REDUCED_MOTION).matches;
 
 const DEFAULT_START: [number, number] = [-2.5, 2.3];
 
@@ -165,8 +160,8 @@ export default function LossSurface3D() {
   const [beta, setBeta] = useState(0.9);
   const [start, setStart] = useState<[number, number]>(DEFAULT_START);
   const [shown, setShown] = useState<Record<OptimiserId, boolean>>({ sgd: true, momentum: true, adam: true });
-  const progressRef = useRef(0);
-  const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, () => false);
+  const progressRef = useRef(STEPS);
+  const [playing, setPlaying] = useState(false);
 
   const paths = useMemo(
     () =>
@@ -182,14 +177,19 @@ export default function LossSurface3D() {
     [paths],
   );
 
-  // Replay the animation whenever the trajectories change.
-  useEffect(() => {
-    progressRef.current = reducedMotion ? STEPS : 0;
-  }, [paths, reducedMotion]);
+  function togglePlayback() {
+    if (!playing && progressRef.current >= STEPS) progressRef.current = 0;
+    setPlaying(!playing);
+  }
 
-  const replay = () => (progressRef.current = reducedMotion ? STEPS : 0);
+  function showCompletePaths() {
+    setPlaying(false);
+    progressRef.current = STEPS;
+  }
+
   const newStart = () => {
     const r = () => (Math.random() * 2 - 1) * (EXTENT - 0.3);
+    showCompletePaths();
     setStart([r(), r()]);
   };
 
@@ -209,7 +209,7 @@ export default function LossSurface3D() {
               <sphereGeometry args={[0.09, 24, 24]} />
               <meshStandardMaterial color="#ffffff" />
             </mesh>
-            <Clock progressRef={progressRef} playing={!reducedMotion} />
+            <Clock progressRef={progressRef} playing={playing} finish={() => setPlaying(false)} />
             <OrbitControls enablePan={false} minDistance={4} maxDistance={14} maxPolarAngle={Math.PI / 2.05} target={[0, 0.6, 0]} />
           </Canvas>
           <div className="pointer-events-none absolute left-3 top-3 text-[11px] text-white/70">Drag to orbit · scroll to zoom</div>
@@ -234,12 +234,10 @@ export default function LossSurface3D() {
               ))}
             </div>
           </fieldset>
-          <Slider label="Learning rate" value={lr} min={0.005} max={0.4} step={0.005} format={(v) => v.toFixed(3)} onChange={setLr} />
-          <Slider label="Momentum β" value={beta} min={0} max={0.98} step={0.01} format={(v) => v.toFixed(2)} onChange={setBeta} />
+          <Slider label="Learning rate" value={lr} min={0.005} max={0.4} step={0.005} format={(v) => v.toFixed(3)} onChange={(v) => { showCompletePaths(); setLr(v); }} />
+          <Slider label="Momentum β" value={beta} min={0} max={0.98} step={0.01} format={(v) => v.toFixed(2)} onChange={(v) => { showCompletePaths(); setBeta(v); }} />
           <div className="flex gap-2">
-            <button type="button" onClick={replay} className="btn-secondary flex-1">
-              Replay
-            </button>
+            <PlaybackButton playing={playing} toggle={togglePlayback} description="optimiser trajectories" className="btn-secondary flex-1" />
             <button type="button" onClick={newStart} className="btn-secondary flex-1">
               New start
             </button>

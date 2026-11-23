@@ -15,8 +15,18 @@ function Loading() {
 // Each visualisation is code-split and rendered only in the browser, so a
 // visitor to one page never downloads another page's libraries (e.g. Three.js).
 const components: Record<VizComponentKey, ComponentType> = {
+  "dart-orbit": dynamic(() => import("./DartOrbit"), { ssr: false, loading: Loading }),
+  "einstein-ring": dynamic(() => import("./EinsteinRing"), { ssr: false, loading: Loading }),
+  "lorenz-attractor": dynamic(() => import("./LorenzAttractor"), { ssr: false, loading: Loading }),
+  "henon-attractor": dynamic(() => import("./HenonAttractor"), { ssr: false, loading: Loading }),
+  "reaction-diffusion": dynamic(() => import("./ReactionDiffusion"), { ssr: false, loading: Loading }),
+  "small-world-network": dynamic(() => import("./NetworkPapers").then((module) => module.SmallWorldNetwork), { ssr: false, loading: Loading }),
+  "growing-hubs-network": dynamic(() => import("./NetworkPapers").then((module) => module.GrowingHubsNetwork), { ssr: false, loading: Loading }),
   "dna-crystal": dynamic(() => import("./CrystalStructures").then((module) => module.DnaCrystal), { ssr: false, loading: Loading }),
   "gfp-crystal": dynamic(() => import("./CrystalStructures").then((module) => module.GfpCrystal), { ssr: false, loading: Loading }),
+  "health-income": dynamic(() => import("./HealthAndIncome"), { ssr: false, loading: Loading }),
+  "exoplanet-atlas": dynamic(() => import("./ExoplanetAtlas"), { ssr: false, loading: Loading }),
+  "warming-record": dynamic(() => import("./WarmingRecord"), { ssr: false, loading: Loading }),
   "wine-fingerprints": dynamic(() => import("./WineFingerprints"), { ssr: false, loading: Loading }),
   "hemoglobin-3d": dynamic(() => import("./Hemoglobin3D"), { ssr: false, loading: Loading }),
   "life-lines": dynamic(() => import("./LifeLines"), { ssr: false, loading: Loading }),

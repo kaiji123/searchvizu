@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PlaybackButton, useRangePlayback } from "./playback";
 import "./research-samples.css";
 
 type Planet = { name: string; period: number; distance: number; radius: number };
@@ -11,7 +12,7 @@ export default function PlanetaryOrbits() {
   const [error, setError] = useState(false);
   const [selected, setSelected] = useState(3);
   const [day, setDay] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const playback = useRangePlayback(day, setDay, { min: 0, max: 60, step: 0.1, delay: 70 });
 
   useEffect(() => {
     fetch("/data/trappist-1.csv").then((response) => {
@@ -27,11 +28,6 @@ export default function PlanetaryOrbits() {
     }).catch(() => setError(true));
   }, []);
 
-  useEffect(() => {
-    if (!playing) return;
-    const timer = window.setInterval(() => setDay((value) => Math.min(60, value + 0.05)), 50);
-    return () => window.clearInterval(timer);
-  }, [playing]);
   const active = planets[selected];
   const orbit = (distance: number) => 42 + 174 * Math.sqrt((distance - planets[0].distance) / (planets[6].distance - planets[0].distance));
 
@@ -49,7 +45,7 @@ export default function PlanetaryOrbits() {
         </svg><div className="orbit-caption"><span>SCHEMATIC / NOT TO SCALE</span><span>DAY {day.toFixed(1)}</span></div></div>
         <div className="orbit-details"><p className="research-eyebrow">SELECT A WORLD</p><div className="planet-buttons">{planets.map((p, i) => <button type="button" key={p.name} onClick={() => setSelected(i)} aria-pressed={selected === i} style={{ "--planet": colours[i] } as React.CSSProperties}>{p.name.slice(-1)}</button>)}</div><div className="planet-name"><span style={{ background: colours[selected] }} /> <h3>{active.name}</h3></div><p className="orbit-description">A distant world orbiting an ultracool dwarf star.</p><div className="planet-stat"><span>ONE ORBIT</span><strong>{active.period.toFixed(2)} <small>Earth days</small></strong></div><div className="planet-stat"><span>ORBITAL SEMI-MAJOR AXIS</span><strong>{active.distance.toFixed(4)} <small>AU</small></strong></div><div className="planet-stat"><span>PLANET RADIUS</span><strong>{active.radius.toFixed(2)} <small>× Earth</small></strong></div></div>
       </div>
-      <div className="orbit-controls"><button type="button" className="research-action" onClick={() => { if (day >= 60) setDay(0); setPlaying(!playing || day >= 60); }}>{playing && day < 60 ? "❚❚ Pause" : "▶ Play"}</button><label htmlFor="orbit-day">Elapsed days <strong>{day.toFixed(1)}</strong></label><input id="orbit-day" type="range" min="0" max="60" step="0.1" value={day} onChange={(event) => { setPlaying(false); setDay(Number(event.target.value)); }} /><span>60 days</span></div>
+      <div className="orbit-controls"><PlaybackButton {...playback} description="planetary orbits" className="research-action" /><label htmlFor="orbit-day">Elapsed days <strong>{day.toFixed(1)}</strong></label><input id="orbit-day" type="range" min="0" max="60" step="0.1" value={day} onChange={(event) => playback.select(Number(event.target.value))} /><span>60 days</span></div>
       <p className="research-note">Circular paths and starting alignment are illustrative, not actual positions. Orbit spacing is compressed; planet sizes and colours are artistic. Animation starts paused.</p>
     </>}
     <p className="research-source">Data: <a href="https://exoplanetarchive.ipac.caltech.edu/overview/TRAPPIST-1" target="_blank" rel="noreferrer">NASA Exoplanet Archive</a> · <a href="https://doi.org/10.3847/PSJ/abd022" target="_blank" rel="noreferrer">Agol et al. 2021</a>. NASA Exoplanet Archive operated by Caltech under contract with NASA.</p>

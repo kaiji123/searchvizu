@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type PointerEvent } from "react";
 import { Slider, Toggle, Stat } from "./controls";
+import { PlaybackButton, useRangePlayback } from "./playback";
 
 type State = [s: number, e: number, i: number, r: number];
 
@@ -70,6 +71,8 @@ export default function SirModel() {
     initialInfected: 0.001,
   });
   const [hoverDay, setHoverDay] = useState<number | null>(null);
+  const [playDay, setPlayDay] = useState(-1);
+  const playback = useRangePlayback(playDay, setPlayDay, { min: 0, max: p.days, step: Math.max(1, Math.round(p.days / 120)), delay: 70 });
 
   const series = useMemo(() => solve(p), [p]);
   const set = <K extends keyof Params>(k: K, v: Params[K]) => setP((prev) => ({ ...prev, [k]: v }));
@@ -98,7 +101,8 @@ export default function SirModel() {
     setHoverDay(Math.max(0, Math.min(p.days, Math.round(frac * p.days))));
   }
 
-  const hovered = hoverDay !== null ? series[hoverDay] : null;
+  const selectedDay = !playback.playing && hoverDay !== null ? hoverDay : playDay >= 0 ? Math.min(playDay, p.days) : null;
+  const selectedState = selectedDay !== null ? series[selectedDay] : null;
 
   return (
     <div className="viz-panel">
@@ -165,11 +169,11 @@ export default function SirModel() {
 
             <circle cx={x(peakDay)} cy={y(peak)} r={4} fill="var(--viz-2)" stroke="var(--surface)" strokeWidth={2} />
 
-            {hovered && hoverDay !== null && (
+            {selectedState && selectedDay !== null && (
               <g pointerEvents="none">
-                <line x1={x(hoverDay)} x2={x(hoverDay)} y1={M.top} y2={M.top + IH} stroke="var(--muted)" opacity={0.5} />
+                <line x1={x(selectedDay)} x2={x(selectedDay)} y1={M.top} y2={M.top + IH} stroke="var(--muted)" opacity={0.5} />
                 {visible.map((s) => (
-                  <circle key={s.key} cx={x(hoverDay)} cy={y(hovered[s.idx])} r={3.5} fill={s.color} />
+                  <circle key={s.key} cx={x(selectedDay)} cy={y(selectedState[s.idx])} r={3.5} fill={s.color} />
                 ))}
               </g>
             )}
@@ -185,14 +189,15 @@ export default function SirModel() {
               onPointerLeave={() => setHoverDay(null)}
             />
           </svg>
-          <p className="mt-2 min-h-5 text-sm text-muted tabular-nums" aria-live="polite">
-            {hovered && hoverDay !== null
-              ? `Day ${hoverDay}: ` + visible.map((s) => `${s.key} ${(hovered[s.idx] * 100).toFixed(1)}%`).join(" · ")
+          <p className="mt-2 min-h-5 text-sm text-muted tabular-nums" aria-live={playback.playing ? "off" : "polite"}>
+            {selectedState && selectedDay !== null
+              ? `Day ${selectedDay}: ` + visible.map((s) => `${s.key} ${(selectedState[s.idx] * 100).toFixed(1)}%`).join(" · ")
               : "Hover or tap the chart to read values on a given day."}
           </p>
         </div>
 
         <div className="flex flex-col gap-5">
+          <PlaybackButton {...playback} description="model timeline" className="btn-secondary self-start" />
           <Slider label="R₀" value={p.r0} min={0.5} max={6} step={0.1} format={(v) => v.toFixed(1)} onChange={(v) => set("r0", v)} />
           <Slider
             label="Infectious period"

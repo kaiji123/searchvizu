@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { PlaybackButton, useRangePlayback } from "./playback";
 import "./research-samples.css";
 
 type Event = { id: string; magnitude: number; place: string; time: number; depth: number; url: string; magnitudeType: string };
@@ -16,6 +17,9 @@ export default function SeismicYear() {
   const [month, setMonth] = useState(-1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const playback = useRangePlayback(month, (next) => { setMonth(next); setSelectedId(null); }, {
+    min: 0, max: 11, step: 1, delay: 750, ready: events.length > 0,
+  });
   useEffect(() => {
     fetch("/data/usgs-earthquakes-2025-m6.geojson").then((response) => { if (!response.ok) throw new Error("Dataset unavailable"); return response.json(); }).then((data: { features: Feature[] }) => {
       const entries = data.features.map((f) => ({ id: f.id, magnitude: f.properties.mag, place: f.properties.place ?? "Location unavailable", time: f.properties.time, depth: f.geometry.coordinates[2], url: f.properties.url, magnitudeType: f.properties.magType })).filter((e) => Number.isFinite(e.magnitude) && Number.isFinite(e.depth) && e.time >= beginning && e.time < ending);
@@ -31,7 +35,8 @@ export default function SeismicYear() {
     <div className="research-header"><span>FIELD NOTES / 03</span><span>USGS EARTHQUAKE CATALOG ↗</span></div>
     <div className="research-intro"><div><p className="research-eyebrow">A YEAR OF EARTHQUAKES</p><h2>The world<br /><em>in motion.</em></h2></div><p>One year of magnitude 6+ earthquakes. Each mark is a moment recorded somewhere on Earth.</p></div>
     {error ? <p role="alert">The earthquake dataset could not be loaded. Please try refreshing.</p> : !events.length ? <p role="status">Loading earthquake data…</p> : <>
-      <div className="seismic-toolbar"><div><strong>{visible.length}</strong><span> {month === -1 ? "EVENTS IN 2025" : `EVENTS IN ${monthNames[month].toUpperCase()}`}</span></div><label htmlFor="seismic-month">FILTER BY MONTH <select id="seismic-month" value={month} onChange={(event) => { setMonth(Number(event.target.value)); setSelectedId(null); }}><option value={-1}>All of 2025</option>{monthNames.map((name, i) => <option value={i} key={name}>{name}</option>)}</select></label></div>
+      <PlaybackButton {...playback} description="earthquake months" className="research-action mt-4" />
+      <div className="seismic-toolbar"><div><strong>{visible.length}</strong><span> {month === -1 ? "EVENTS IN 2025" : `EVENTS IN ${monthNames[month].toUpperCase()}`}</span></div><label htmlFor="seismic-month">FILTER BY MONTH <select id="seismic-month" value={month} onChange={(event) => playback.select(Number(event.target.value))}><option value={-1}>All of 2025</option>{monthNames.map((name, i) => <option value={i} key={name}>{name}</option>)}</select></label></div>
       <div className="seismic-chart"><svg viewBox="0 0 790 340" role="img" aria-label="Earthquakes in 2025 plotted by time and reported depth. Use the event selector below for accessible details.">
         {[0, 100, 300, 500, 600].map((depth) => <g key={depth}><line x1="60" y1={y(depth)} x2="760" y2={y(depth)} stroke="#ffffff" strokeOpacity=".12"/><text x="48" y={y(depth) + 3} textAnchor="end" className="seismic-axis">{depth}</text></g>)}
         {monthNames.map((name, i) => { const mx = x(Date.UTC(2025, i, 1)); return <g key={name}><line x1={mx} x2={mx} y1="38" y2="293" stroke="#ffffff" strokeOpacity=".06"/><text x={mx} y="316" className="seismic-axis">{name.toUpperCase()}</text></g>; })}

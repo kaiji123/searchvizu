@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { PlaybackButton, useRangePlayback } from "./playback";
 import "./research-samples.css";
 
 type Series = { id: string; name: string; region: string; values: (number | null)[] };
@@ -25,18 +26,13 @@ export default function LifeLines() {
   const [countryB, setCountryB] = useState("JPN");
   const [region, setRegion] = useState("All regions");
   const [year, setYear] = useState(2024);
-  const [playing, setPlaying] = useState(false);
+  const playback = useRangePlayback(year, setYear, { min: first, max: last, step: 1, delay: 260 });
   useEffect(() => {
     fetch("/data/worldbank-life-expectancy-compact.json").then((response) => { if (!response.ok) throw new Error("Dataset unavailable"); return response.json(); }).then((result: Dataset) => {
       if (result.startYear !== first || !Array.isArray(result.series) || !result.series.length) throw new Error("Invalid dataset");
       setData(result);
     }).catch(() => setError(true));
   }, []);
-  useEffect(() => {
-    if (!playing || year >= last) return;
-    const timer = window.setTimeout(() => setYear(year + 1), 260);
-    return () => window.clearTimeout(timer);
-  }, [playing, year]);
   const series = data?.series;
   const paths = useMemo(() => (series ?? []).map((item) => ({ ...item, path: trajectory(item.values) })), [series]);
   const regions = useMemo(() => [...new Set((series ?? []).map((item) => item.region))].sort(), [series]);
@@ -57,7 +53,7 @@ export default function LifeLines() {
         <line x1={px(year)} x2={px(year)} y1="25" y2="275" stroke="#f8f4e8" strokeOpacity=".65" strokeDasharray="3 5"/>
         {comparison.map((item, index) => { const value = item?.values[year - first]; return value == null ? null : <circle key={index} cx={px(year)} cy={py(value)} r="5" fill={index === 0 ? "#f2c4a2" : "#a7ded4"} stroke="#18292a" strokeWidth="2"/>; })}
       </svg></div>
-      <div className="life-time"><button type="button" className="research-action" onClick={() => { if (year >= last) setYear(first); setPlaying(!playing || year >= last); }}>{playing && year < last ? "❚❚ Pause" : "▶ Play"}</button><label htmlFor="life-year">YEAR <strong>{year}</strong></label><input id="life-year" type="range" min={first} max={last} value={year} onChange={(event) => { setPlaying(false); setYear(Number(event.target.value)); }} /><span>{last}</span></div>
+      <div className="life-time"><PlaybackButton {...playback} description="life expectancy timeline" className="research-action" /><label htmlFor="life-year">YEAR <strong>{year}</strong></label><input id="life-year" type="range" min={first} max={last} value={year} onChange={(event) => playback.select(Number(event.target.value))} /><span>{last}</span></div>
       <div className="life-readings">{comparison.map((item, i) => { const value = item?.values[year - first]; return <div key={i}><p><span className={`life-dot life-dot-${i === 0 ? "a" : "b"}`}/>{item?.name}</p><strong>{value == null ? "—" : value.toFixed(1)} <small>{value == null ? "no data" : "years"}</small></strong><span>at birth · {year}</span></div>; })}</div>
       <p className="research-note">Period life expectancy is a hypothetical measure using the mortality rates of that year; it is not a prediction of an individual’s lifespan. Estimates and coverage vary. No uncertainty intervals are shown.</p>
     </>}
